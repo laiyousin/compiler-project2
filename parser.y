@@ -30,7 +30,7 @@ static void yyerror(const char *msg);
 
 
 %%
-prog	: PROGRAM id '('identifier_list')' ';'
+prog	: PROGRAM IDENTIFIER '('identifier_list')' ';'
 		declarations
 		subprogram_declarations
 		compound_statement
@@ -63,10 +63,13 @@ subprogram_declaration    :
 		compound_statement
 		;
 subprogram_head    : FUNCTION IDENTIFIER arguments : standard_type ';'
-		| PROCEDURE id arguments ';'
+		| PROCEDURE IDENTIFIER arguments ';'
 		;
 arguments    : '(' parameter_list ')'
 		|
+		;
+parameter_list   : optional_var identifier_list : type
+		| optional_var identifier_list : type ';' parameter_list
 		;
 optional_var    : VAR
 		|
