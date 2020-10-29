@@ -17,8 +17,8 @@ int fileno(FILE *);
 #define MAX_LINE_LENG      1000
 #define LIST       strcat(buffer, yytext)
 #define LIST_FLUSH do{ if(opt_list) printf("%s", buffer); *buffer = 0; }while(0)
-#define LOG(TYPE) do{ LIST; fprintf(stderr, "token(type:%-10s) on line %4d, %3d : %s\n", #TYPE, line_no, chr_no - yyleng + 1, yytext); } while(0)
-#define COMMENT do{ LIST; fprintf(stderr, "[INFO ] line %4d:%3d comment string\n", line_no, chr_no-(int)yyleng+1); } while(0)		
+#define LOG(TYPE) do{ LIST; if(tokenon == 0){fprintf(stderr, "token(type:%-10s) on line %4d, %3d : %s\n", #TYPE, line_no, chr_no - yyleng + 1, yytext);}} while(0)
+#define COMMENT do{ LIST; if(tokenon == 0){fprintf(stderr, "[INFO ] line %4d:%3d comment string\n", line_no, chr_no-(int)yyleng+1); }} while(0)		
 
 
 
@@ -27,6 +27,7 @@ int line_no = 1, chr_no = 0;
 char buffer[MAX_LINE_LENG];
 int flag = 0;
 int turnon = 0;
+int tokenon = 1;
 
 %}
 
@@ -110,8 +111,9 @@ Z [zZ]
 ("//")|("//"[^\n]+)                			{COMMENT;}
 "/*"([^(\*/)]+((\*[^/])|(("//")*[^(\*/)]+)|[\)])*)* {do{
 												LIST; 
-												
-												fprintf(stderr, "[INFO ] line %4d:%3d comment string start\n", line_no, chr_no-(int)yyleng+1); 
+												if(tokenon == 0)
+												{
+													fprintf(stderr, "[INFO ] line %4d:%3d comment string start\n", line_no, chr_no-(int)yyleng+1); }
 												int flag = 0;
 												for(int i = 0; i < yyleng; i++)
 												{
@@ -135,7 +137,9 @@ Z [zZ]
 											}
 "*/"                                        {do{ 
 													LIST; 
-												    fprintf(stderr, "[INFO ] line %4d:%3d comment string end\n", line_no, chr_no-(int)yyleng+1); 
+													if(tokenon == 0)
+												    {
+														fprintf(stderr, "[INFO ] line %4d:%3d comment string end\n", line_no, chr_no-(int)yyleng+1); }
 													
 												} while(0);
 											}
@@ -152,3 +156,5 @@ Z [zZ]
 
 ["#"][" "]*pragma[" "]*list[" "]*on  { *buffer = 0; turnon = 0; LIST; LIST_FLUSH;}
 ["#"][" "]*pragma[" "]*list[" "]*off { turnon = 1;}
+["#"][" "]*pragma[" "]*token[" "]*on  { tokenon = 0;}
+["#"][" "]*pragma[" "]*token[" "]*off { tokenon = 1;}
