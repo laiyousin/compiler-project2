@@ -113,7 +113,8 @@ Z [zZ]
 												LIST; 
 												if(tokenon == 0)
 												{
-													fprintf(stderr, "[INFO ] line %4d:%3d comment string start\n", line_no, chr_no-(int)yyleng+1); }
+													fprintf(stderr, "[INFO ] line %4d:%3d comment string start\n", line_no, chr_no-(int)yyleng+1); 
+												}
 												int flag = 0;
 												for(int i = 0; i < yyleng; i++)
 												{
@@ -156,5 +157,5 @@ Z [zZ]
 
 ["#"][" "]*pragma[" "]*list[" "]*on  { *buffer = 0; turnon = 0; LIST; LIST_FLUSH;}
 ["#"][" "]*pragma[" "]*list[" "]*off { turnon = 1;}
-["#"][" "]*pragma[" "]*token[" "]*on  { tokenon = 0;}
+["#"][" "]*pragma[" "]*token[" "]*on  { *buffer = 0; tokenon = 0; LIST; LIST_FLUSH;}
 ["#"][" "]*pragma[" "]*token[" "]*off { tokenon = 1;}
