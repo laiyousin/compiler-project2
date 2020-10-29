@@ -20,7 +20,7 @@ static void yyerror(const char *msg);
 
 %token LPAREN RPAREN SEMICOLON DOT COMMA COLON LBRACE RBRACE DOTDOT ASSIGNMENT ADDOP SUBOP MULOP DIVOP LTOP GTOP EQOP GETOP LETOP NEQOP
 
-%token IDENTIFIER REALNUMBER INTEGERNUM SCIENTIFIC LITERALSTR
+%token IDENTIFIER REALNUMBER INTEGERNUM SCIENTIFIC LITERALSTR NUMBER
 
 %union {
   int val;
@@ -30,103 +30,107 @@ static void yyerror(const char *msg);
 
 
 %%
-prog	::= PROGRAM id (identifier_list);
+prog	: PROGRAM id '('identifier_list')' ';'
 		declarations
 		subprogram_declarations
 		compound_statement
-		.
-
-identifier_list    ::= id
-		| identifier_list, id
-
-declarations    ::= declarations VAR identifier_list : type;
-		| lambda
+		DOT
+		;
+identifier_list    : IDENTIFIER
+		| identifier_list, IDENTIFIER
+		;
+declarations    : declaration
+		| 
+		;
+declaration    :VAR identifier_list : type ';' declaration
+		|
+		;
+type    : standard_type
+		| ARRAY [num..num] OF type
 		
-type    ::= standard_type
-		| ARRAY [num .. num] OF type
-		
-standard_type    ::= INTEGER
+standard_type    : INTEGER
 		| REAL
 		| STRING
-
-subprogram_declarations    ::=
-		subprogram_declarations subprogram_declaration;
-		| lambda
-		
-subprogram_declaration    ::=
+		;
+subprogram_declarations    :
+		subprogram_declarations subprogram_declaration ';'
+		|
+		;
+subprogram_declaration    :
 		subprogram_head
 		declarations
 		subprogram_declarations
 		compound_statement
-	
-subprogram_head    ::= FUNCTION id arguments : standard_type;
-		| PROCEDURE id arguments;
-		
-arguments    ::=(parameter_list)
-		| lambda
-
-optional_var    ::= VAR
-		| lambda
-
-compound_statement    ::= begin
+		;
+subprogram_head    : FUNCTION IDENTIFIER arguments : standard_type ';'
+		| PROCEDURE id arguments ';'
+		;
+arguments    : '(' parameter_list ')'
+		|
+		;
+optional_var    : VAR
+		|
+		;
+compound_statement    : PBEGIN
 		optional_statements
-		end
+		END
 
-optional_statements    ::= standard_list
-		| lambda
+optional_statements    : standard_list
+		| 
+		;
 
-standard_list    ::= statement
-		| standard_list ; statement
+standard_list    : statement
+		| standard_list ';' statement
 
-statement    ::= variable := expression
+statement    : variable : expression
 		| procedure_statement
 		| compound_statement
 		| IF expression THEN statement ELSE statement
 		| WHILE expression DO statement
-		| lambda
-
-variable    ::= id tail
-
-tail    ::= [expression] tail
-		| lambda
-		
-procedure_statement    ::= id
-		| id (expression_list)
-		
-expression_list    ::= expression
+		|
+		;
+variable    : IDENTIFIER tail
+		;
+tail    : [expression] tail
+		|
+		;
+procedure_statement    : IDENTIFIER
+		| IDENTIFIER '('expression_list ')'
+		;
+expression_list    : expression
 		| expression_list , expression
 		
-expression    ::= boolexpression
+expression    : boolexpression
 		| boolexpression AND boolexpression
 		| boolexpression OR boolexpression
-		
-boolexpression    ::= simple_expression
+		;
+boolexpression    : simple_expression
 		| simple_expression relop simple_expression
-
-simple_expression    ::= term
+		;
+simple_expression    : term
 		| simple_expression addop term
-		
-term    ::= factor
+		;
+term    : factor
 		| term mulop factor
-		
-factor    ::= id tail
-		| id (expression_list)
-		| num
-		| stringconst
-		|(expression)
-		| not factor
-		| sub factor
-		
-addop    ::= + | -
-
-mulop    ::= * | /
-
-relop    ::= <
-		| >
-		| =
-		| <=
-		| >=
-		| !=
+		;
+factor    : IDENTIFIER tail
+		| IDENTIFIER '(' expression_list ')'
+		| NUMBER
+		| LITERALSTR
+		|'('expression')'
+		| NOT factor
+		| SUBOP factor
+		;
+addop    : ADDOP | SUBOP
+		;
+mulop    : MULOP | DIVOP
+		;
+relop    : LTOP
+		| GTOP
+		| EQOP
+		| LETOP
+		| GETOP
+		| NEQOP
     ;
 
 %%
