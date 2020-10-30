@@ -30,30 +30,27 @@ static void yyerror(const char *msg);
 
 
 %%
-prog	: PROGRAM IDENTIFIER '('identifier_list')' ';'
+prog	: PROGRAM IDENTIFIER LPAREN identifier_list RPAREN SEMICOLON 
 		declarations
 		subprogram_declarations
 		compound_statement
 		DOT
 		;
 identifier_list    : IDENTIFIER
-		| identifier_list, IDENTIFIER
+		| identifier_list COMMA IDENTIFIER
 		;
-declarations    : declaration
+declarations    : declarations VAR identifier_list COLON type SEMICOLON
 		| 
 		;
-declaration    :VAR identifier_list : type ';' declaration
-		|
-		;
 type    : standard_type
-		| ARRAY [num..num] OF type
+		| ARRAY LBRACE NUMBER DOTDOT NUMBER RBRACE OF type
 		
 standard_type    : INTEGER
 		| REAL
 		| STRING
 		;
 subprogram_declarations    :
-		subprogram_declarations subprogram_declaration ';'
+		subprogram_declarations subprogram_declaration SEMICOLON
 		|
 		;
 subprogram_declaration    :
@@ -62,14 +59,14 @@ subprogram_declaration    :
 		subprogram_declarations
 		compound_statement
 		;
-subprogram_head    : FUNCTION IDENTIFIER arguments : standard_type ';'
-		| PROCEDURE IDENTIFIER arguments ';'
+subprogram_head    : FUNCTION IDENTIFIER arguments COLON standard_type SEMICOLON
+		| PROCEDURE IDENTIFIER arguments SEMICOLON
 		;
-arguments    : '(' parameter_list ')'
+arguments    : LPAREN parameter_list RPAREN
 		|
 		;
-parameter_list   : optional_var identifier_list : type
-		| optional_var identifier_list : type ';' parameter_list
+parameter_list   : optional_var identifier_list COLON type
+		| optional_var identifier_list COLON type SEMICOLON parameter_list
 		;
 optional_var    : VAR
 		|
@@ -77,15 +74,14 @@ optional_var    : VAR
 compound_statement    : PBEGIN
 		optional_statements
 		END
-
+		;
 optional_statements    : standard_list
 		| 
 		;
-
 standard_list    : statement
-		| standard_list ';' statement
+		| standard_list SEMICOLON statement
 
-statement    : variable : expression
+statement    : variable ASSIGNMENT expression
 		| procedure_statement
 		| compound_statement
 		| IF expression THEN statement ELSE statement
@@ -94,14 +90,14 @@ statement    : variable : expression
 		;
 variable    : IDENTIFIER tail
 		;
-tail    : [expression] tail
+tail    : LBRACE expression RBRACE tail
 		|
 		;
 procedure_statement    : IDENTIFIER
-		| IDENTIFIER '('expression_list ')'
+		| IDENTIFIER LPAREN expression_list RPAREN
 		;
 expression_list    : expression
-		| expression_list , expression
+		| expression_list COMMA expression
 		
 expression    : boolexpression
 		| boolexpression AND boolexpression
@@ -117,10 +113,10 @@ term    : factor
 		| term mulop factor
 		;
 factor    : IDENTIFIER tail
-		| IDENTIFIER '(' expression_list ')'
+		| IDENTIFIER LPAREN expression_list RPAREN
 		| NUMBER
 		| LITERALSTR
-		|'('expression')'
+		|LPAREN expression RPAREN
 		| NOT factor
 		| SUBOP factor
 		;
