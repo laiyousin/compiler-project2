@@ -63,7 +63,7 @@ Z [zZ]
 
 %%
 											/* v could do something */
-{P}{R}{O}{G}{R}{A}{M}       				{LOG(KEYWORD); return(PROGRAM);    }
+{P}{R}{O}{G}{R}{A}{M}       				{LOG(KEYWORD);return(PROGRAM);    }
 {V}{A}{R}                   				{LOG(KEYWORD); return(VAR);        }
 {A}{R}{R}{A}{Y}             				{LOG(KEYWORD); return(ARRAY);      }
 {O}{F}                      				{LOG(KEYWORD); return(OF);         }
@@ -103,11 +103,11 @@ Z [zZ]
 ">="                	        			{LOG(KEYWORD); return(GETOP);      }
 "<="                   		    			{LOG(KEYWORD); return(LETOP);      }
 "!="	                        			{LOG(KEYWORD); return(NEQOP);      }
-[a-z][a-z|A-Z|0-9]*([_]+[a-z|A-Z|0-9]+)*	{LOG(IDENTIFIER);}
-[0-9]+("."[0-9]+)*([E|e][+|-]*[0-9]+)*      {LOG(NUMBER);}
-[0-9]+"."[0-9]+ 	            			{LOG(REALNUMBER);}
-[0-9]+"."[0-9]+[e|E][+|-][0-9]+ 			{LOG(SCIENTIFIC);}
-\"([^\\\"]|\\.)*\"	                        {LOG(STRING);}
+[a-z][a-z|A-Z|0-9]*([_]+[a-z|A-Z|0-9]+)*	{LOG(IDENTIFIER); return(IDENTIFIER);}
+[0-9]+("."[0-9]+)*([E|e][+|-]*[0-9]+)*      {LOG(NUMBER); return(NUMBER);}
+[0-9]+"."[0-9]+ 	            			{LOG(REALNUMBER); return(REALNUMBER);}
+[0-9]+"."[0-9]+[e|E][+|-][0-9]+ 			{LOG(SCIENTIFIC); return(SCIENTIFIC);}
+\"([^\\\"]|\\.)*\"	                        {LOG(STRING); return(STRING);}
 ("//")|("//"[^\n]+)                			{COMMENT;}
 "/*"([^(\*/)]+((\*[^/])|(("//")*[^(\*/)]+)|[\)])*)* {do{
 												LIST; 
