@@ -107,7 +107,7 @@ Z [zZ]
 [0-9]+("."[0-9]+)*([E|e][+|-]*[0-9]+)*      {LOG(NUMBER); return(NUMBER);}
 [0-9]+"."[0-9]+ 	            			{LOG(REALNUMBER); return(REALNUMBER);}
 [0-9]+"."[0-9]+[e|E][+|-][0-9]+ 			{LOG(SCIENTIFIC); return(SCIENTIFIC);}
-\"([^\\\"]|\\.)*\"	                        {LOG(STRING); return(STRING);}
+\"([^\\\"]|\\.)*\"	                        {LOG(LITERALSTR); return(LITERALSTR);} 
 ("//")|("//"[^\n]+)                			{COMMENT;}
 "/*"([^(\*/)]+((\*[^/])|(("//")*[^(\*/)]+)|[\)])*)* {do{
 												LIST; 
