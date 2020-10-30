@@ -116,7 +116,7 @@ factor    : IDENTIFIER tail
 		| IDENTIFIER LPAREN expression_list RPAREN
 		| NUMBER
 		| LITERALSTR
-		|LPAREN expression RPAREN
+		| LPAREN expression RPAREN
 		| NOT factor
 		| SUBOP factor
 		;
